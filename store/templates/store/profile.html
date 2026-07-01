@@ -1,0 +1,184 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block title %}Desi Kart | My Account & Orders{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 40px; margin-bottom: 60px;">
+    <div class="row">
+        
+        <!-- Left Sidebar Navigation Block -->
+        <div class="col-md-3" style="margin-bottom: 20px;">
+            <div style="background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 25px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
+                <div style="width: 80px; height: 80px; background: #e3f2fd; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto;">
+                    <i class="fa fa-user" style="font-size: 35px; color: #2874f0;"></i>
+                </div>
+                <h4 style="font-weight: 700; color: #212121; margin-bottom: 4px;">Hello, {{ user.username }}</h4>
+                <p style="font-size: 13px; color: #878787; margin-bottom: 20px;">{{ user.email|default:"No email set" }}</p>
+                <hr>
+                <div style="text-align: left; font-size: 14px;">
+                    <a href="{% url 'cart_detail' %}" style="display: block; padding: 10px 0; color: #212121; text-decoration: none; font-weight: 600;"><i class="fa fa-shopping-cart" style="margin-right: 8px;"></i> My Cart</a>
+                    <a onclick="return confirm('Are you sure?')" href="{% url 'user_logout' %}" style="display: block; padding: 10px 0; color: #d32f2f; text-decoration: none; font-weight: 600;"><i class="fa fa-sign-out" style="margin-right: 8px;"></i> Log Out</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side Main Order History Stream -->
+        <div class="col-md-9">
+            <div style="background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
+                <h3 style="font-weight: 700; color: #212121; margin-top: 0; margin-bottom: 25px; font-size: 18px; text-transform: uppercase; letter-spacing: 0.5px;">My Orders History</h3>
+                
+                {% for order in orders %}
+                    <div style="border: 1px solid #e0e0e0; border-radius: 6px; margin-bottom: 20px; overflow: hidden;">
+                        
+                        <!-- Order Top Metadata Bar Header -->
+                        <div style="background: #f9f9f9; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e0e0e0; flex-wrap: wrap; gap: 10px;">
+                            <div style="font-size: 13px; color: #666;">
+                                Ordered on: <strong style="color: #212121;">{{ order.created_at|date:"d M Y, h:i A" }}</strong>
+                                <span style="margin: 0 10px; color: #ccc;">|</span>
+                                Order ID: <strong style="color: #212121;">#{{ order.id }}</strong>
+                            </div>
+                            <div>
+                                {% if order.status == 'Delivered' %}
+                                    <span style="background: #e8f5e9; color: #2e7d32; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; text-transform: uppercase;">Delivered</span>
+                                {% elif order.status == 'Cancelled' %}
+                                    <span style="background: #ffebee; color: #c62828; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; text-transform: uppercase;">Cancelled</span>
+                                {% else %}
+                                    <span style="background: #fff3e0; color: #e65100; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; text-transform: uppercase;">{{ order.status }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Order Line Items Loop List -->
+                        <div style="padding: 16px;">
+                            {% for item in order.items.all %}
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f9f9f9; flex-wrap: wrap; gap: 15px;">
+                                    
+                                    <!-- Left Section: Interactive Hyperlinked Image & Product Metadata -->
+                                    <div style="display: flex; gap: 15px; align-items: center;">
+                                        <a href="{% url 'product_detail' item.product.id %}" style="display: block; width: 60px; height: 60px; border: 1px solid #f0f0f0; padding: 4px; border-radius: 4px; background: #fff;">
+                                            {% if item.product.image %}
+                                                <img src="{{ item.product.image.url }}" alt="" style="width:100%; height:100%; object-fit:contain;">
+                                            {% else %}
+                                                <i class="fa fa-picture-o" style="font-size: 20px; color:#ccc; display:flex; justify-content:center; align-items:center; height:100%;"></i>
+                                            {% endif %}
+                                        </a>
+                                        <div>
+                                            <a href="{% url 'product_detail' item.product.id %}" style="font-weight: 600; color: #212121; text-decoration: none; font-size: 14px;" onmouseover="this.style.color='#2ecc71'" onmouseout="this.style.color='#212121'">
+                                                {{ item.product.name }}
+                                            </a>
+                                            <div style="font-size: 12px; color: #878787; margin-top: 3px;">
+                                                Quantity: {{ item.quantity }} @ ₹{{ item.price }} each
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Right Section: Interactive Rate trigger or individual line cost totals summary -->
+                                    <div style="text-align: right;">
+                                        {% if order.status == 'Delivered' %}
+                                            <!-- Flipkart Professional Rate & Review trigger Button overlay launcher -->
+                                            <button type="button" class="btn btn-sm" style="background: #ffffff; border: 1px solid #2ecc71; color: #2ecc71; font-weight: 700; font-size: 12px; border-radius: 4px; padding: 6px 12px; transition: all 0.2s;" onmouseover="this.style.background='#2ecc71'; this.style.color='#ffffff';" onmouseout="this.style.background='#ffffff'; this.style.color='#2ecc71';" onclick="openReviewModal('{{ item.product.id }}', '{{ item.product.name|escapejs }}')">
+                                                <i class="fa fa-star"></i> Rate & Review
+                                            </button>
+                                        {% else %}
+                                            <span style="font-weight: 600; color: #212121; font-size: 14px;">₹{% widthratio item.price 1 item.quantity %}</span>
+                                        {% endif %}
+                                    </div>
+
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Order Card Bottom Address Footer Details Panel Line -->
+                        <div style="background: #fafafa; padding: 12px 16px; border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; font-size: 13px; flex-wrap: wrap; gap: 10px;">
+                            <div style="color: #666;">
+                                Ship to: <strong style="color: #444;">{{ order.full_name }}</strong>, {{ order.shipping_address }}, {{ order.city }} - {{ order.pincode }}
+                            </div>
+                            <div style="font-size: 15px; font-weight: 700; color: #212121;">
+                                Total Paid: ₹{{ order.total_amount }}
+                            </div>
+                        </div>
+
+                    </div>
+                {% empty %}
+                    <div style="text-align: center; padding: 40px 0;">
+                        <i class="fa fa-shopping-bag" style="font-size: 48px; color: #cccccc; margin-bottom: 15px; display: block;"></i>
+                        <p style="color: #666; font-size: 14px;">You haven't placed any orders yet.</p>
+                        <a href="{% url 'home' %}" class="btn" style="background: #2ecc71; color: #fff; font-weight: 600; font-size: 13px; margin-top: 10px; padding: 8px 20px; border-radius: 4px;">Start Shopping</a>
+                    </div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- =========================================================================
+     FLIPKART MODAL REVIEW PORTAL DRAWER SCREEN
+     ========================================================================= -->
+<div class="modal fade" id="dkReviewModal" tabindex="-1" role="dialog" aria-hidden="true" style="margin-top: 80px;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="border-radius: 8px; border: none; box-shadow: 0 5px 25px rgba(0,0,0,0.2);">
+            
+            <div class="modal-header" style="background: #f9f9f9; border-bottom: 1px solid #eee; border-top-left-radius: 8px; border-top-right-radius: 8px; padding: 15px 20px;">
+                <h5 class="modal-title" id="modalProductName" style="font-weight: 700; color: #212121; font-size: 15px; width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Product Review</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="outline: none; font-size: 22px; margin-top: -2px;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            
+            <form id="dkReviewForm" action="" method="POST" enctype="multipart/form-data" style="margin:0;">
+                {% csrf_token %}
+                <div class="modal-body" style="padding: 20px;">
+                    
+                    <!-- Star Ratings Selector dropdown component -->
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 6px;">How would you rate this product?</label>
+                        <select name="stars" style="width: 100%; padding: 8px 12px; border-radius: 4px; border: 1px solid #ccc; font-weight: 600; font-size: 14px; outline: none; background: #fff;">
+                            <option value="5">5 ★★★★★ (Excellent Quality)</option>
+                            <option value="4">4 ★★★★☆ (Good Quality)</option>
+                            <option value="3">3 ★★★☆☆ (Average/Satisfactory)</option>
+                            <option value="2">2 ★★☆☆☆ (Below Average)</option>
+                            <option value="1">1 ★☆☆☆☆ (Terrible experience)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Text Area written details context container -->
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 6px;">Write a detailed review</label>
+                        <textarea name="review_text" rows="4" placeholder="Share your honest thoughts about product material, design comfort, or shipping presentation..." style="width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 12px; font-size: 13px; outline: none; resize: none;" required></textarea>
+                    </div>
+
+                    <!-- Photo Upload File field input array element -->
+                    <div>
+                        <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 6px;">Upload Product Image (Optional)</label>
+                        <input type="file" name="review_image" accept="image/*" style="font-size: 13px; width: 100%; padding: 4px 0;">
+                    </div>
+
+                </div>
+                
+                <div class="modal-footer" style="background: #f9f9f9; border-top: 1px solid #eee; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; padding: 12px 20px; display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" style="font-weight: 600; font-size: 13px; padding: 6px 16px; border-radius: 4px;">Cancel</button>
+                    <button type="submit" style="background: #2ecc71; color: #ffffff; border: none; font-weight: 700; font-size: 13px; padding: 7px 20px; border-radius: 4px; text-transform: uppercase; cursor: pointer;">Submit Feedback</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+// Dynamic runtime trigger to bind the form target details safely
+function openReviewModal(productId, productName) {
+    // 1. Set the dynamic header text inside the pop-up
+    document.getElementById('modalProductName').innerText = "Review: " + productName;
+    
+    // 2. Set the dynamic form POST action URL pointing to the matching backend route 
+    document.getElementById('dkReviewForm').action = "/product/" + productId + "/add-review/";
+    
+    // 3. Command Bootstrap to show the modal container overlay
+    $('#dkReviewModal').modal('show');
+}
+</script>
+{% endblock %}

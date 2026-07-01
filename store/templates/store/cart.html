@@ -1,0 +1,75 @@
+{% extends 'store/base.html' %}
+{% block title %}Desi Kart | My Shopping Cart{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 40px;">
+    <h3 style="font-weight: 700; color: #212121; margin-bottom: 25px;">Shopping Cart</h3>
+
+    {% if cart.items.all %}
+    <div class="row">
+        <!-- Cart Items List -->
+        <div class="col-md-8">
+            <div style="background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+                {% for item in cart.items.all %}
+                <div class="row" style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #f0f0f0;">
+                    <div class="col-sm-2 text-center">
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="max-height: 80px; max-width: 100%; object-fit: contain;">
+                    </div>
+                    <div class="col-sm-6">
+                        <h4 style="font-weight: 600; color: #212121; margin-top: 0;">{{ item.product.name }}</h4>
+                        <p class="text-muted" style="font-size: 12px; margin-bottom: 5px;">Category: {{ item.product.category.name }}</p>
+                        <a href="{% url 'update_cart_quantity' item.id 'remove' %}" style="color: #d32f2f; text-decoration: none; font-size: 13px; font-weight: 600;">
+                            Remove Item
+                        </a>
+                    </div>
+                    <div class="col-sm-4 text-right">
+                        <!-- Quantity Modifiers -->
+                        <div style="display: inline-flex; align-items: center; border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom: 10px; background: #fff;">
+                            <a href="{% url 'update_cart_quantity' item.id 'decrement' %}" style="text-decoration: none; padding: 5px 10px; border: 1px solid #ccc; color: #333;">-</a>
+                            <span style="padding: 5px 15px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc;">{{ item.quantity }}</span> 
+                            <a href="{% url 'update_cart_quantity' item.id 'increment' %}" style="text-decoration: none; padding: 5px 10px; border: 1px solid #ccc; color: #333;">+</a>
+                        </div>
+                        <div style="font-size: 16px; font-weight: 600; color: #212121;">
+                            ₹{{ item.subtotal }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Order Summary Side Card -->
+        <div class="col-md-4">
+            <div style="background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+                <h4 style="font-weight: 700; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px; margin-top: 0; color: #878787; text-transform: uppercase; font-size: 13px;">Price Details</h4>
+                
+                <div style="display: flex; justify-content: space-between; margin: 15px 0; font-size: 15px;">
+                    <span>Price ({{ cart.total_items }} items)</span>
+                    <span>₹{{ cart.total_price }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin: 15px 0; font-size: 15px;">
+                    <span>Delivery Charges</span>
+                    <span style="color: #388e3c; font-weight: 600;">FREE</span>
+                </div>
+                
+                <div style="border-top: 1px dashed #e0e0e0; padding-top: 15px; margin-top: 15px; display: flex; justify-content: space-between; font-size: 18px; font-weight: 700; color: #212121;">
+                    <span>Total Amount</span>
+                    <span>₹{{ cart.total_price }}</span>
+                </div>
+                
+                <a href="{% url 'checkout' %}" class="btn btn-primary btn-block" style="background-color: #fb641b; border: none; font-weight: 600; padding: 12px; border-radius: 4px; margin-top: 20px; font-size: 15px; text-transform: uppercase; text-decoration: none; text-align: center; display: block;">
+                    Place Order
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center" style="padding: 60px 0; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px;">
+        <i class="fa fa-shopping-cart" style="font-size: 56px; color: #dbdbdb; margin-bottom: 15px;"></i>
+        <h4 style="font-weight: 600; color: #212121;">Your cart is empty!</h4>
+        <p class="text-muted" style="font-size: 13px; margin-bottom: 20px;">Add items to it now to shop.</p>
+        <a href="{% url 'home' %}" class="btn btn-primary" style="background-color: #2874f0; border: none; padding: 10px 25px; font-weight: 600; border-radius: 4px; text-decoration: none;">Shop Now</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

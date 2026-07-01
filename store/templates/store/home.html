@@ -1,0 +1,256 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block title %}Desi Kart | Discover Latest Trends{% endblock %}
+
+{% block content %}
+<style>
+    /* Premium Responsive CSS Product Layout Catalog Engine Grid */
+    .desikart-product-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr); /* 5 Clean Equal items on Desktop screen widths */
+        gap: 12px;
+        padding: 15px 0;
+    }
+
+    /* Standard Card Structure Design Adjustments */
+    .product-card-wrapper {
+        background: #ffffff;
+        border: 1px solid #f0f0f0;
+        border-radius: 4px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: box-shadow 0.2s ease-in-out;
+        height: 100%;
+    }
+    .product-card-wrapper:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .img-box-container {
+        width: 100%;
+        height: 130px; /* Short uniform image container height limits stretching */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 8px;
+        background: #fafafa;
+        border-radius: 2px;
+    }
+    .img-box-container img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+    }
+    .info-meta-block h4 {
+        font-size: 13px;
+        font-weight: 500;
+        color: #212121;
+        margin: 4px 0;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* Truncates long text titles after 2 neat lines */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        height: 36px;
+    }
+    .price-layout-row {
+        margin: 4px 0 8px 0;
+    }
+    .current-price { font-size: 15px; font-weight: 600; color: #212121; }
+    .old-price { font-size: 12px; color: #878787; text-decoration: line-through; margin-left: 4px; }
+    
+    .add-cart-action-btn {
+        background: #ff9f00;
+        color: #ffffff !important;
+        border: none;
+        font-weight: 600;
+        font-size: 12px;
+        padding: 6px;
+        border-radius: 2px;
+        text-align: center;
+        display: block;
+        width: 100%;
+        text-transform: uppercase;
+        text-decoration: none !important;
+    }
+    .add-cart-action-btn:hover { background: #f39700; }
+
+    /* =======================================================
+       RESPONSIVE VIEW MEDIA OVERRIDES (MOBILE & TABLETS)
+       ======================================================= */
+    @media (max-width: 992px) {
+        .desikart-product-grid {
+            grid-template-columns: repeat(4, 1fr); /* 4 items on small laptops/tablets */
+        }
+    }
+    @media (max-width: 768px) {
+        .desikart-product-grid {
+            grid-template-columns: repeat(3, 1fr); /* EXACTLY 3 items in a row on mobile screen viewports */
+            gap: 6px; /* Tighter padding borders space on mobile views */
+        }
+        .product-card-wrapper { padding: 6px; }
+        .img-box-container { height: 95px; } /* Slightly shorter container on small phones */
+        .info-meta-block h4 { font-size: 11px; height: 32px; }
+        .current-price { font-size: 13px; }
+        .old-price { font-size: 10px; }
+        .add-cart-action-btn { font-size: 10px; padding: 5px; }
+    }
+</style>
+
+<div class="container-fluid" style="max-width: 1340px; margin: 0 auto; padding: 0 15px;">
+    {% if personalized_recommendations %}
+    <div class="container-fluid" style="max-width: 1340px; margin: 0 auto; padding: 0 15px; margin-bottom: 30px;">
+        
+        <h3 style="font-weight: 700; color: #212121; margin-top: 20px; margin-bottom: 15px; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+            <i class="fa fa-magic" style="color: #2874f0;"></i> 
+            {% if user.is_authenticated and user.order_set.exists %}
+                Inspired by Your Shopping Interest
+            {% else %}
+                Top Picks For You
+            {% endif %}
+        </h3>
+        
+        <!-- Added 'desikart-rec-grid' class to cleanly control desktop vs mobile layout styles -->
+        <div class="desikart-rec-grid" style="display: flex; overflow-x: auto; gap: 15px; padding-bottom: 10px; -webkit-overflow-scrolling: touch;">
+            
+            {% for item in personalized_recommendations %}
+                <div class="desikart-rec-card" style="background: #ffffff; border: 1px solid #e0e0e0; border-radius: 4px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s, box-shadow 0.2s;">
+                    
+                    <a href="{% url 'product_detail' item.id %}" style="text-decoration: none; color: inherit;">
+                        <div style="height: 150px; background: #fff; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; overflow: hidden;">
+                            {% if item.image %}
+                                <img src="{{ item.image.url }}" alt="" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                            {% endif %}
+                        </div>
+                        
+                        <h5 style="font-weight: 600; font-size: 14px; margin: 0 0 6px 0; color: #212121; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {{ item.name }}
+                        </h5>
+                        
+                        <div style="margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                            {% if item.total_reviews > 0 %}
+                                <span style="background: #2ecc71; color: #ffffff; font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 2px;">
+                                    {{ item.average_rating }} ★
+                                </span>
+                            {% endif %}
+                            <span style="color: #878787; font-size: 12px;">{{ item.category.name }}</span>
+                        </div>
+    
+                        <div style="margin-bottom: 12px; font-weight: 700; color: #212121; font-size: 15px;">
+                            ₹{{ item.discount_price|default:item.price }}
+                            {% if item.discount_price %}
+                                <span style="text-decoration: line-through; color: #878787; font-size: 12px; font-weight: 400; margin-left: 4px;">₹{{ item.price }}</span>
+                            {% endif %}
+                        </div>
+                    </a>
+    
+                    <a href="{% url 'add_to_cart' item.id %}" class="btn btn-sm text-center" style="background: #ff9f00; color: #ffffff; font-weight: 700; font-size: 12px; width: 100%; border-radius: 3px; text-transform: uppercase; padding: 6px 0; text-decoration: none; display: block;">
+                        Add to Cart
+                    </a>
+                </div>
+            {% endfor %}
+            
+        </div>
+    </div>
+    
+    <style>
+    /* 1. Mobile touch track adjustments (768px or smaller) */
+    @media (max-width: 768px) {
+        .desikart-rec-card {
+            flex: 0 0 160px;
+            width: 160px;
+        }
+    }
+    
+    /* 2. Professional Desktop Grid conversion (769px and wider) */
+    @media (min-width: 769px) {
+        .desikart-rec-grid {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+            overflow-x: visible !important;
+            padding-bottom: 0 !important;
+        }
+        .desikart-rec-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+    }
+    </style>
+    {% endif %}
+    
+        <div style="border-bottom: 1px solid #e0e0e0; margin-top: 20px; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+        {% if search_query %}
+            <h3 style="font-weight: 700; color: #212121; margin: 0; font-size: 18px;">
+                Search Results for "{{ search_query }}"
+            </h3>
+            <a href="{% url 'home' %}" class="btn btn-sm btn-default" style="font-weight: 600; border-radius: 4px;">Clear Search</a>
+        {% elif selected_category %}
+            <h3 style="font-weight: 700; color: #212121; margin: 0; font-size: 18px; text-transform: capitalize;">
+                Browsing {{ selected_category }}
+            </h3>
+            <a href="{% url 'home' %}" class="btn btn-sm btn-default" style="font-weight: 600; border-radius: 4px;">View All</a>
+        {% else %}
+            <h3 style="font-weight: 700; color: #212121; margin: 0; font-size: 18px;">
+                Trending Products
+            </h3>
+        {% endif %}
+    </div>
+
+    <div class="desikart-product-grid">
+        {% for product in products %}
+            <div class="product-card-wrapper">
+                
+                <a href="{% url 'product_detail' product.id %}" style="text-decoration:none; display:block;">
+                    <div class="img-box-container">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                        {% else %}
+                            <i class="fa fa-picture-o" style="font-size: 24px; color:#ccc;"></i>
+                        {% endif %}
+                    </div>
+                </a>
+
+                <div class="info-meta-block">
+                    <span style="font-size: 10px; color: #878787; text-transform: uppercase; font-weight: 600;">{{ product.category.name }}</span>
+                        <a href="{% url 'product_detail' product.id %}" style="text-decoration:none;">
+                           <h4 title="{{ product.name }}">{{ product.name }}</h4>
+                        </a>
+                    <div style="margin: 4px 0; display: flex; align-items: center; gap: 6px;">
+                        {% if product.total_reviews > 0 %}
+                            <span style="background: #2ecc71; color: #ffffff; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 3px; display: inline-flex; align-items: center; gap: 2px;">
+                                {{ product.average_rating }} <i class="fa fa-star" style="font-size: 9px;"></i>
+                            </span>
+                            <span style="color: #878787; font-size: 12px; font-weight: 500;">({{ product.total_reviews }})</span>
+                        {% else %}
+                            <span style="color: #b0b0b0; font-size: 11px; font-style: italic;">No reviews yet</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="price-layout-row">
+                        {% if product.discount_price %}
+                            <span class="current-price">₹{{ product.discount_price }}</span>
+                            <span class="old-price">₹{{ product.price }}</span>
+                        {% else %}
+                            <span class="current-price">₹{{ product.price }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <a href="{% url 'add_to_cart' product.id %}" class="add-cart-action-btn">
+                        <i class="fa fa-shopping-cart"></i> Add to Cart
+                    </a>
+                </div>
+                
+            </div>
+        {% empty %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 50px 0;">
+                <i class="fa fa-shopping-bag" style="font-size: 40px; color: #cccccc; margin-bottom: 10px;"></i>
+                <p style="font-size: 14px; color: #666;">No products found in database.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,330 @@
+{% extends 'store/base.html' %}
+{% block title %}Desi Kart | {{ product.name }}{% endblock %}
+
+{% block content %}
+<style>
+    /* Flipkart-Inspired Detail Matrix Layout Engine */
+    .dk-detail-container {
+        max-width: 1240px;
+        margin: 30px auto;
+        background: #ffffff;
+        padding: 20px;
+        display: flex;
+        gap: 30px;
+    }
+    
+    /* Left Column: Fixed Media Actions Core Box */
+    .dk-media-column {
+        width: 40%;
+        position: sticky;
+        top: 80px;
+        height: max-content;
+    }
+    .dk-main-img-holder {
+        border: 1px solid #f0f0f0;
+        border-radius: 4px;
+        padding: 20px;
+        height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+    }
+    .dk-main-img-holder img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+    }
+    .dk-action-buttons-row {
+        display: flex;
+        gap: 12px;
+        margin-top: 15px;
+    }
+    .dk-btn-action {
+        flex: 1;
+        height: 50px;
+        border-radius: 2px;
+        border: none;
+        font-size: 15px;
+        font-weight: 700;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: #ffffff !important;
+        text-decoration: none !important;
+        cursor: pointer;
+    }
+    .dk-btn-cart { background: #ff9f00; }
+    .dk-btn-cart:hover { background: #f39700; }
+    .dk-btn-buy { background: #fb641b; }
+    .dk-btn-buy:hover { background: #e5530b; }
+
+    /* Right Column: Fluid Scrolling Text Specs */
+    .dk-info-column {
+        width: 60%;
+        font-family: inherit;
+    }
+    .dk-breadcrumb {
+        font-size: 12px;
+        color: #878787;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+    .dk-product-title {
+        font-size: 20px;
+        font-weight: 500;
+        color: #212121;
+        margin: 0 0 12px 0;
+        line-height: 1.4;
+    }
+    .dk-price-strip {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    .dk-det-price { font-size: 28px; font-weight: 700; color: #212121; }
+    .dk-det-old { font-size: 16px; color: #878787; text-decoration: line-through; }
+    
+    .dk-section-header {
+        font-size: 16px;
+        font-weight: 600;
+        color: #212121;
+        margin: 25px 0 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+        padding-bottom: 8px;
+    }
+    .dk-description-text {
+        font-size: 14px;
+        color: #333333;
+        line-height: 1.6;
+    }
+
+    /* System Badges Highlights */
+    .dk-stock-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        font-size: 12px;
+        font-weight: 700;
+        border-radius: 3px;
+        text-transform: uppercase;
+        margin-bottom: 15px;
+    }
+
+    /* =========================================================================
+       RESPONSIVE MATRIX ADJUSTMENTS (MOBILE & TABLET VIEWS)
+       ========================================================================= */
+    @media (max-width: 768px) {
+        .dk-detail-container {
+            flex-direction: column;
+            padding: 10px;
+            margin: 10px auto;
+        }
+        .dk-media-column, .dk-info-column {
+            width: 100%;
+            position: static;
+        }
+        .dk-main-img-holder {
+            height: 280px;
+        }
+        .dk-product-title {
+            font-size: 16px;
+            margin-top: 15px;
+        }
+        .dk-det-price { font-size: 22px; }
+        .dk-btn-action { font-size: 13px; height: 45px; }
+    }
+</style>
+
+<div class="container-fluid" style="background: #f1f3f6; min-height: 80vh; padding: 1px 0;">
+    <div class="dk-detail-container">
+        
+        <!-- LEFT PORTAL DISPLAY CARD COLUMN -->
+        <div class="dk-media-column">
+            <div class="dk-main-img-holder">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                    <i class="fa fa-picture-o" style="font-size: 64px; color: #ccc;"></i>
+                {% endif %}
+            </div>
+            
+            <div class="dk-action-buttons-row">
+                <!-- Standard Cart Push Button -->
+                <a href="{% url 'add_to_cart' product.id %}" class="dk-btn-action dk-btn-cart">
+                    <i class="fa fa-shopping-cart" style="font-size: 16px;"></i> Add to Cart
+                </a>
+                
+                <!-- Instant Buy Now Action -->
+                <a href="{% url 'buy_now' product.id %}" class="dk-btn-action dk-btn-buy">
+                    <i class="fa fa-bolt" style="font-size: 16px;"></i> Buy Now
+                </a>
+            </div>
+        </div>
+
+        <!-- RIGHT DATA COMPONENT META DETAILS COLUMN -->
+        <div class="dk-info-column">
+            <div class="dk-breadcrumb">
+                Home &gt; {{ product.category.name }} &gt; {{ product.name|truncatechars:30 }}
+            </div>
+            
+            <h2 class="dk-product-title">{{ product.name }}</h2>
+            
+            <!-- Stock Count Indicators Matrix -->
+            {% if product.stock > 0 %}
+                <span class="dk-stock-badge" style="background: #e8f5e9; color: #2e7d32;">In Stock ({{ product.stock }} items left)</span>
+            {% else %}
+                <span class="dk-stock-badge" style="background: #ffebee; color: #c62828;">Out of Stock</span>
+            {% endif %}
+
+            <div class="dk-price-strip">
+                {% if product.discount_price %}
+                    <span class="dk-det-price">₹{{ product.discount_price }}</span>
+                    <span class="dk-det-old">₹{{ product.price }}</span>
+                    <span style="color: #388e3c; font-weight: 600; font-size: 14px;">
+                        Save Extra!
+                    </span>
+                {% else %}
+                    <span class="dk-det-price">₹{{ product.price }}</span>
+                {% endif %}
+            </div>
+
+            <h4 class="dk-section-header">Ratings & Reviews</h4>
+            
+            <!-- Big Summary Scoreboard Badge Row -->
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px; background: #fafafa; padding: 15px; border-radius: 4px;">
+                <div style="text-align: center; border-right: 1px solid #e0e0e0; padding-right: 25px;">
+                    <h1 style="margin: 0; font-weight: 700; color: #212121; font-size: 32px;">{{ product.average_rating }} <span style="font-size: 20px; color: #2ecc71;">★</span></h1>
+                    <p style="margin: 4px 0 0 0; color: #878787; font-size: 12px; font-weight: 600;">{{ product.total_reviews }} Ratings</p>
+                </div>
+                <div style="font-size: 13px; color: #333;">
+                    Certified Buyers feedback curated under Desi Kart marketplace guidelines.
+                </div>
+            </div>
+
+            <!-- Available Bank / Logistic Offers block -->
+            <h4 class="dk-section-header" style="margin-top: 10px;">Available Offers</h4>
+            <div style="font-size: 13px; color: #212121; line-height: 2;">
+                <p><i class="fa fa-tag" style="color: #388e3c; margin-right: 8px;"></i> <strong>Bank Offer:</strong> 5% Unlimited Cashback on Desi Kart Axis Bank Credit Card.</p>
+                <p><i class="fa fa-tag" style="color: #388e3c; margin-right: 8px;"></i> <strong>Special Offer:</strong> Get extra 10% off (price inclusive of cash discount).</p>
+                <p><i class="fa fa-truck" style="color: #2874f0; margin-right: 8px;"></i> <strong>Delivery:</strong> Free Standard Shipping across India via Cash on Delivery.</p>
+            </div>
+
+            <!-- Product Long Description Context Block -->
+            <h4 class="dk-section-header">Product Specifications</h4>
+            <div class="dk-description-text">
+                {{ product.description|linebreaks }}
+            </div>
+
+            <!-- Dynamic Active Reviews Display Feed Stream -->
+            <div>
+                {% for review in reviews %}
+                    <div style="border-bottom: 1px solid #f0f0f0; padding: 16px 0;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                            <!-- Tiny green star layout element -->
+                            <span style="background: #2ecc71; color:#fff; font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 3px;">
+                                {{ review.stars }} ★
+                            </span>
+                            <strong style="font-size: 13px; color: #212121;">{{ review.user.username }}</strong>
+                            <span style="font-size: 11px; color: #878787;">{{ review.created_at|date:"d M Y" }}</span>
+                        </div>
+                        
+                        <p style="margin: 0 0 10px 0; font-size: 13px; color: #333; line-height: 1.5;">{{ review.review_text }}</p>
+                        
+                        <!-- Review image thumb handler -->
+                        {% if review.review_image %}
+                            <div style="margin-top: 8px;">
+                                <a href="{{ review.review_image.url }}" target="_blank">
+                                    <img src="{{ review.review_image.url }}" alt="Review item attachment" style="width: 65px; height: 65px; object-fit: cover; border: 1px solid #e0e0e0; border-radius: 4px; cursor: pointer; transition: transform 0.2s;">
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% empty %}
+                    <p style="font-size: 13px; color: #878787; font-style: italic; margin-top: 10px;">No custom text reviews left for this shirt or personal care item yet. Be the first to share your thoughts!</p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- =========================================================================
+     SMART RECOMMENDATIONS SHELF (ML MACHINE LEARNING PIPELINE ENGINE)
+     ========================================================================= -->
+{% if similar_products %}
+<div class="container" style="margin-top: 40px; border-top: 1px solid #e0e0e0; padding-top: 25px; margin-bottom: 30px;">
+    
+    <h3 style="font-weight: 700; color: #212121; margin-bottom: 15px; font-size: 18px;">
+        Similar Products You Might Like
+    </h3>
+    
+    <div class="desikart-sim-grid" style="display: flex; overflow-x: auto; gap: 15px; padding-bottom: 10px; -webkit-overflow-scrolling: touch;">
+        
+        {% for item in similar_products %}
+            <div class="desikart-sim-card" style="background: #ffffff; border: 1px solid #e0e0e0; border-radius: 4px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s, box-shadow 0.2s;">
+                
+                <a href="{% url 'product_detail' item.id %}" style="text-decoration: none; color: inherit;">
+                    <div style="height: 150px; background: #fff; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; overflow: hidden;">
+                        {% if item.image %}
+                            <img src="{{ item.image.url }}" alt="" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                        {% endif %}
+                    </div>
+                    
+                    <h5 style="font-weight: 600; font-size: 14px; margin: 0 0 6px 0; color: #212121; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        {{ item.name }}
+                    </h5>
+                    
+                    <div style="margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                        {% if item.total_reviews > 0 %}
+                            <span style="background: #2ecc71; color: #ffffff; font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 2px;">
+                                {{ item.average_rating }} ★
+                            </span>
+                        {% endif %}
+                        <span style="color: #878787; font-size: 12px;">{{ item.category.name }}</span>
+                    </div>
+
+                    <div style="margin-bottom: 12px; font-weight: 700; color: #212121; font-size: 15px;">
+                        ₹{{ item.discount_price|default:item.price }}
+                        {% if item.discount_price %}
+                            <span style="text-decoration: line-through; color: #878787; font-size: 12px; font-weight: 400; margin-left: 4px;">₹{{ item.price }}</span>
+                        {% endif %}
+                    </div>
+                </a>
+
+                <a href="{% url 'add_to_cart' item.id %}" class="btn btn-sm text-center" style="background: #ff9f00; color: #ffffff; font-weight: 700; font-size: 12px; width: 100%; border-radius: 3px; text-transform: uppercase; padding: 6px 0; text-decoration: none; display: block;">
+                    Add to Cart
+                </a>
+            </div>
+        {% endfor %}
+        
+    </div>
+</div>
+
+<style>
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .desikart-sim-card {
+        flex: 0 0 160px;
+        width: 160px;
+    }
+}
+
+/* Desktop Grid conversion */
+@media (min-width: 769px) {
+    .desikart-sim-grid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+        overflow-x: visible !important;
+        padding-bottom: 0 !important;
+    }
+    .desikart-sim-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+}
+</style>
+{% endif %}
+{% endblock %}

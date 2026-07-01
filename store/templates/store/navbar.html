@@ -1,0 +1,429 @@
+{% load static %}
+<style>
+    /* =========================================================================
+       DESI KART NAVIGATION CONTROLLER BASE
+       ========================================================================= */
+    .fk-nav-wrapper {
+        font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+        background: #27ae60;
+        width: 100%;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .fk-top-row {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        position: relative;
+    }
+    .fk-logo-area a {
+        text-decoration: none !important;
+    }
+    .fk-logo-area h1 {
+        font-size: 18px;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0;
+        font-style: italic;
+        letter-spacing: 0.5px;
+    }
+    .fk-search-container {
+        flex-grow: 1;
+        max-width: 600px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .fk-search-container form {
+        display: flex;
+        align-items: center;
+        background: #ffffff;
+        border-radius: 25px;
+        width: 100%;
+        padding: 0 8px;
+        box-shadow: 0 1px 2px 0 rgba(0,0,0,0.2);
+    }
+    .fk-search-container input[type="search"] {
+        border: none !important;
+        background: #ffffff !important;
+        width: 100%;
+        height: 36px;
+        border-radius: 25px;
+        font-size: 14px;
+        outline: none;
+        color: #212121;
+    }
+    .fk-search-container .search-btn {
+        background: #ffffff !important;
+        border: none !important;
+        color: #27ae60 !important;
+        font-size: 15px;
+        cursor: pointer;
+    }
+    
+    .mobile-cart-link {
+        color: #ffffff !important;
+        font-size: 18px;
+        text-decoration: none !important;
+        padding: 5px;
+    }
+    .fk-actions .dropdown-menu::before {
+        content: '';
+        position: absolute;
+        top: -12px; /* Adjust this to match the height of your gap */
+        left: 0;
+        width: 100%;
+        height: 12px;
+        background: transparent;
+    }
+
+    /* Animated Morphing Hamburger to Black X Button */
+    .fk-hamburger {
+        display: none;
+        background: transparent;
+        border: none;
+        width: 24px;
+        height: 20px;
+        position: relative;
+        cursor: pointer;
+        outline: none;
+        padding: 0;
+        z-index: 1100;
+    }
+    .fk-hamburger span {
+        display: block;
+        position: absolute;
+        height: 3px;
+        width: 100%;
+        background: #ffffff; /* White in hamburger state */
+        border-radius: 9px;
+        opacity: 1;
+        left: 0;
+        transform: rotate(0deg);
+        transition: .25s ease-in-out;
+    }
+    .fk-hamburger span:nth-child(1) { top: 0px; }
+    .fk-hamburger span:nth-child(2) { top: 8px; }
+    .fk-hamburger span:nth-child(3) { top: 16px; }
+
+    /* Morphing and changing color into a crisp BLACK 'X' when active */
+    .fk-hamburger.open span {
+        background: #000000 !important; /* Changes X color to clear black */
+    }
+    .fk-hamburger.open span:nth-child(1) { top: 8px; transform: rotate(135deg); }
+    .fk-hamburger.open span:nth-child(2) { opacity: 0; left: -60px; }
+    .fk-hamburger.open span:nth-child(3) { top: 8px; transform: rotate(-135deg); }
+
+    /* Desktop Links Row */
+    .fk-actions {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    .fk-actions > li > a {
+        color: #ffffff !important;
+        font-weight: 600;
+        font-size: 15px;
+        text-decoration: none !important;
+    }
+    .fk-actions .dropdown-menu {
+        border: none !important;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+        margin-top: 2px !important;
+        background: #ffffff !important;
+    }
+    .fk-actions .dropdown-menu a {
+        color: #212121 !important;
+        display: block;
+        padding: 10px 20px;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    /* Sub-navbar category list styles */
+    .fk-bottom-divider { background: #ffffff; border-bottom: 1px solid #e0e0e0; }
+    .fk-bottom-row { max-width: 1300px; margin: 0 auto; }
+    .fk-categories-nav {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    .fk-categories-nav::-webkit-scrollbar { display: none; }
+    .fk-categories-nav > li > a {
+        display: block;
+        padding: 12px 20px !important;
+        color: #212121 !important;
+        font-weight: 500;
+        font-size: 14px;
+        text-decoration: none !important;
+    }
+
+    /* =========================================================================
+       RESPONSIVE FLOATING MINI CARD DROPDOWN (MOBILE FIXES)
+       ========================================================================= */
+    /* Responsive override for mobile screens */
+    @media (max-width: 768px) {
+        .fk-actions .dropdown-menu {
+            position: absolute !important;
+            top: 45px !important; /* Forces it below the header bar path */
+            right: 10px !important;
+            left: auto !important;
+            width: 180px !important;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2) !important;
+            z-index: 99999 !important;
+        }
+    }
+    @media (max-width: 768px) {
+        .fk-hamburger { display: block; }
+        
+        /* Revamped menu: Compact, floating right card instead of empty full screen */
+        .fk-actions {
+            position: absolute;
+            top: 55px;
+            right: 12px;
+            width: 200px; /* Reduced width */
+            height: auto; /* Height adapts perfectly to link numbers */
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border: 1px solid #e0e0e0;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 8px 0;
+            gap: 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease-in-out; /* Smooth pop-down transition */
+            z-index: 1050;
+        }
+        
+        /* Active open trigger pop action state */
+        .fk-actions.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .fk-actions > li {
+            width: 100%;
+            border-bottom: none;
+        }
+        .fk-actions > li > a {
+            color: #212121 !important;
+            padding: 12px 20px;
+            display: block;
+            width: 100%;
+            font-size: 14px;
+        }
+        .fk-actions > li > a:hover {
+            background: #f5f7fa;
+        }
+        
+        /* Mobile inline sub-dropdown menus links formatting */
+        /* =========================================================================
+           UNIFIED DROPDOWN RESPONSIVE ENGINE (PURE CSS)
+           ========================================================================= */
+        
+        /* 1. Desktop Mode (Screens wider than 768px) */
+        @media (min-width: 769px) {
+            .fk-actions .dropdown:hover .dropdown-menu {
+                display: block !important;
+            }
+        }
+        
+        /* 2. Mobile Touch Mode (Screens 768px and smaller) */
+        @media (max-width: 768px) {
+            /* Prevent the menu from overlapping your search bar */
+            .fk-actions .dropdown-menu {
+                position: absolute !important;
+                top: 100% !important; /* Drops it safely right below the username */
+                right: 0 !important;
+                left: auto !important;
+                float: right !important;
+                width: 170px !important;
+                min-width: 170px !important;
+                margin-top: 5px !important;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+                background-color: #ffffff !important;
+                border: 1px solid #ddd !important;
+                z-index: 99999 !important;
+            }
+        
+            /* Keeps individual list layout styling clean inside the mobile dropdown box */
+            .fk-actions .dropdown-menu li a {
+                padding: 10px 15px !important;
+                color: #333333 !important;
+                display: block !important;
+            }
+        }
+
+        /* Completely invisible layout overlay layer (No blur, no darkening background) */
+        .drawer-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: transparent; /* Changed to completely clear */
+            z-index: 1040;
+        }
+        .drawer-backdrop.show { display: block; }
+
+        /* Document row alignment order presets */
+        .fk-top-row {
+            flex-wrap: wrap;
+            padding: 10px 14px;
+        }
+        .fk-logo-area { order: 1; }
+        .fk-hamburger { order: 3; }
+        .fk-search-container {
+            order: 4;
+            width: 100%;
+            max-width: 100%;
+            margin-top: 6px;
+        }
+    }
+</style>
+
+<div class="fk-nav-wrapper">
+    <div class="fk-top-row">
+        <!-- Logo Section -->
+        <div class="fk-logo-area">
+            <a href="/"><h1>DesiKart</h1></a>
+        </div>
+
+        <!-- Search Bar Container + Pinned Cart Icon -->
+        <!-- Search Bar Container + Pinned Cart Icon -->
+        <div class="fk-search-container">
+            <form action="{% url 'home' %}" method="GET" style="margin:0;">
+                <!-- Changed method to GET so users can share search results via URL -->
+                <input type="search" name="search_query" value="{{ search_query|default:'' }}" placeholder="Search for products, brands and more" required>
+                <button type="submit" class="search-btn"><i class="fa fa-search"></i></button>
+            </form>
+            
+            <a href="{% url 'cart_detail' %}" class="mobile-cart-link">
+                <i class="fa fa-shopping-cart"></i>
+            </a>
+        </div>
+
+        <!-- Morphing Hamburger Menu Trigger -->
+        <button class="fk-hamburger" id="navToggleBtn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <!-- Dynamic Action Link Dropdown Card Container -->
+        <ul class="fk-actions" id="navActionsList">
+            {% if user.is_authenticated %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-user"></i> {{ user.username }} <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        {% if user.is_staff %}
+                            <li><a href="{% url 'admin_orders_dashboard' %}" style="color: #2ecc71 !important; font-weight: 600;"><i class="fa fa-dashboard"></i> Admin Desk</a></li>
+                        {% endif %}
+                        <li><a href="{% url 'profile' %}">My Account</a></li>
+                        <li><a onclick="return confirm('Are you sure to log out?')" href="{% url 'user_logout' %}">Log Out</a></li>
+                    </ul>
+                </li>
+            {% else %}
+                <li><a href="{% url 'user_login' %}"><i class="fa fa-sign-in"></i> Login</a></li>
+            {% endif %}
+
+            
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                
+        </ul>
+    </div>
+
+    <!-- Department Navigation Banner Line -->
+    <div class="fk-bottom-divider">
+        <div class="fk-bottom-row">
+            <ul class="fk-categories-nav">
+                <!-- All Categories Reset Link -->
+                <li style="{% if not selected_category %}background: #f5f7fa;{% endif %}">
+                    <a href="{% url 'home' %}" style="color: #2874f0 !important; font-weight:700;">All Categories</a>
+                </li>
+                
+                <!-- Dynamic Category Links -->
+                {% for category in categories %}
+                    <li style="{% if selected_category == category.name %}background: #f5f7fa;{% endif %}">
+                        <a href="{% url 'home' %}?category={{ category.name }}" style="{% if selected_category == category.name %}color: #2874f0 !important; font-weight:700;{% endif %}">
+                            {{ category.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Transparent click capture handler layer -->
+<div class="drawer-backdrop" id="menuBackdrop"></div>
+
+<script>
+$(document).ready(function(){
+    if ($(window).width() > 768) {
+        $(".fk-actions .dropdown").hover(
+            function() { $('.dropdown-menu', this).stop(true, true).slideDown("fast"); },
+            function() { $('.dropdown-menu', this).stop(true, true).slideUp("fast"); }
+        );
+    }
+    
+    function toggleMobileMenu() {
+        $("#navToggleBtn").toggleClass("open");
+        $("#navActionsList").toggleClass("show");
+        $("#menuBackdrop").toggleClass("show");
+    }
+
+    $("#navToggleBtn, #menuBackdrop").click(function(e) {
+        e.preventDefault();
+        toggleMobileMenu();
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    var userBtn = document.querySelector('.fk-actions .dropdown-toggle, [data-toggle="dropdown"]');
+    var dropdownMenu = document.querySelector('.fk-actions .dropdown-menu');
+
+    if (userBtn && dropdownMenu) {
+        // Toggle menu display state on finger tap
+        userBtn.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (dropdownMenu.style.display === 'block') {
+                    dropdownMenu.style.display = 'none';
+                } else {
+                    dropdownMenu.style.display = 'block';
+                }
+            }
+        });
+
+        // Close the menu if a user clicks anywhere else on the screen
+        document.addEventListener('click', function() {
+            if (window.innerWidth <= 768) {
+                dropdownMenu.style.display = 'none';
+            }
+        });
+    }
+});
+</script>

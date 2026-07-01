@@ -1,0 +1,15 @@
+# Ignore the massive virtual environment folders
+.venv/
+venv/
+ENV/
+env/
+
+# Ignore local database records
+*.sqlite3
+
+# Ignore compiled python bytecode caches
+__pycache__/
+*.pyc
+
+# Ignore OS files
+.DS_Store

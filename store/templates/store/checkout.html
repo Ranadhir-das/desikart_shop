@@ -1,0 +1,68 @@
+{% extends 'store/base.html' %}
+{% block title %}Desi Kart | Secure Delivery Checkout{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 40px;">
+    <div class="row">
+        <div class="col-md-7">
+            <div style="background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+                <h4 style="font-weight: 700; color: #212121; margin-top: 0; margin-bottom: 25px; text-transform: uppercase; font-size: 16px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px;">
+                    Delivery Address Details
+                </h4>
+                
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-sm-6 form-group">
+                            <label style="font-size: 13px; color: #555;">Full Name</label>
+                            <input type="text" name="full_name" class="form-control" style="height: 40px; border-radius: 4px;" required>
+                        </div>
+                        <div class="col-sm-6 form-group">
+                            <label style="font-size: 13px; color: #555;">10-Digit Mobile Number</label>
+                            <input type="text" name="phone_number" class="form-control" style="height: 40px; border-radius: 4px;" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size: 13px; color: #555;">Detailed Shipping Address (Area and Street)</label>
+                        <textarea name="shipping_address" class="form-control" rows="4" style="border-radius: 4px;" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 form-group">
+                            <label style="font-size: 13px; color: #555;">City / District / Town</label>
+                            <input type="text" name="city" class="form-control" style="height: 40px; border-radius: 4px;" required>
+                        </div>
+                        <div class="col-sm-6 form-group">
+                            <label style="font-size: 13px; color: #555;">Pincode</label>
+                            <input type="text" name="pincode" class="form-control" style="height: 40px; border-radius: 4px;" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block" style="background-color: #fb641b; border: none; font-weight: 700; height: 46px; border-radius: 4px; margin-top: 20px; text-transform: uppercase; font-size: 15px;">
+                        Confirm & Order (Cash on Delivery)
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sticky Cart Pricing Summary Information Column -->
+        <div class="col-md-5">
+            <div style="background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+                <h4 style="font-weight: 700; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px; margin-top: 0; color: #878787; text-transform: uppercase; font-size: 13px;">Order Items Breakdown</h4>
+                
+                {% for item in checkout_items %}
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0; font-size: 14px;">
+                    <span style="color: #212121; font-weight: 500;">{{ item.product.name }} <small class="text-muted">x{{ item.quantity }}</small></span>
+                    <span style="font-weight: 600; color: #212121;">₹{{ item.subtotal }}</span>
+                </div>
+                {% endfor %}
+                
+                <div style="border-top: 1px dashed #e0e0e0; padding-top: 15px; margin-top: 15px; display: flex; justify-content: space-between; font-size: 18px; font-weight: 700; color: #212121;">
+                    <span>Total Bill</span>
+                    <span>₹{{ total_price }}</span>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

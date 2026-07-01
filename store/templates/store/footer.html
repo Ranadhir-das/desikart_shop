@@ -1,0 +1,307 @@
+{% load static %}
+<style>
+    /* =========================================================================
+       DESI KART CLASSIC FOOTER SYSTEM
+       ========================================================================= */
+    .dk-footer-wrapper {
+        font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+        background: #ffffff;
+        border-top: 1px solid #e0e0e0;
+        margin-top: 50px;
+        color: #212121;
+    }
+
+    /* 1. Top Brands Carousel Section Placeholder */
+    .dk-brands-section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 15px;
+        text-align: center;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .dk-brands-section h3 {
+        font-size: 26px;
+        font-weight: 500;
+        margin-bottom: 25px;
+        color: #000000;
+    }
+    .dk-brands-flex {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+    }
+    .dk-brand-logo {
+        max-height: 45px;
+        max-width: 120px;
+        object-fit: contain;
+        filter: grayscale(20%);
+        opacity: 0.85;
+        transition: all 0.2s;
+    }
+    .dk-brand-logo:hover {
+        filter: grayscale(0%);
+        opacity: 1;
+    }
+
+    /* 2. Newsletter Section */
+    .dk-newsletter-bg {
+        background: #ededed;
+        padding: 35px 15px;
+    }
+    .dk-newsletter-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    .dk-news-text h3 {
+        font-size: 28px;
+        font-weight: 500;
+        margin: 0 0 5px 0;
+        color: #000000;
+    }
+    .dk-news-text p {
+        color: #555555;
+        margin: 0;
+        font-size: 14px;
+    }
+    .dk-news-form {
+        display: flex;
+        max-width: 450px;
+        width: 100%;
+    }
+    .dk-news-form input[type="email"] {
+        flex-grow: 1;
+        padding: 10px 15px;
+        border: 1px solid #cccccc;
+        border-right: none;
+        outline: none;
+        font-size: 14px;
+        background: #ffffff;
+        height: 42px;
+    }
+    .dk-news-form button {
+        background: #2ecc71; /* Accent Green */
+        color: #ffffff;
+        border: none;
+        padding: 0 25px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        height: 42px;
+        transition: background 0.2s;
+    }
+    .dk-news-form button:hover {
+        background: #27ae60;
+    }
+
+    /* 3. Main Link Columns Section */
+    .dk-main-footer {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 50px 15px;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 1fr 1fr;
+        gap: 30px;
+    }
+    .dk-footer-col h4 {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0 0 20px 0;
+        color: #000000;
+    }
+    .dk-footer-col ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .dk-footer-col ul li {
+        margin-bottom: 12px;
+    }
+    .dk-footer-col ul li a {
+        color: #333333;
+        text-decoration: none !important;
+        font-size: 14px;
+        transition: color 0.2s;
+    }
+    .dk-footer-col ul li a:hover {
+        color: #2874f0;
+    }
+    
+    /* Branding block details */
+    .dk-footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+    .dk-footer-brand h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0;
+        color: #000000;
+        letter-spacing: 0.5px;
+    }
+    .dk-contact-info p {
+        font-size: 14px;
+        color: #444444;
+        margin: 0 0 8px 0;
+    }
+    
+    /* Social Media Icons Box Layout */
+    .dk-social-links {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    .dk-social-btn {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #212121;
+        color: #212121 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none !important;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+    .dk-social-btn:hover {
+        background: #212121;
+        color: #ffffff !important;
+    }
+
+    /* 4. Copyright Sub-Footer Bar */
+    .dk-copyright-bar {
+        text-align: center;
+        padding: 20px 15px;
+        border-top: 1px solid #f0f0f0;
+        font-size: 13px;
+        color: #555555;
+    }
+
+    /* =========================================================================
+       RESPONSIVE FOOTER MEDIA BREAKPOINTS
+       ========================================================================= */
+    @media (max-width: 992px) {
+        .dk-main-footer {
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+    }
+    @media (max-width: 600px) {
+        .dk-newsletter-container {
+            flex-direction: column;
+            text-align: center;
+        }
+        .dk-main-footer {
+            grid-template-columns: 1fr;
+            gap: 30px;
+            text-align: center;
+        }
+        .dk-footer-brand {
+            justify-content: center;
+        }
+        .dk-social-links {
+            justify-content: center;
+        }
+        .dk-brands-flex {
+            gap: 20px;
+        }
+    }
+</style>
+
+<footer class="dk-footer-wrapper">
+    
+    <div class="dk-brands-section">
+        <h3>Top Brands</h3>
+        <div class="dk-brands-flex">
+            <span style="font-size: 22px; font-weight: 800; color: #bf1922; font-style: italic; letter-spacing: -1px;">Levi's</span>
+            <span style="font-size: 16px; font-weight: 700; color: #1a305e; font-family: sans-serif;">Allen Solly</span>
+            <span style="font-size: 18px; font-weight: 700; color: #000000; font-family: 'Georgia', serif;">Pepe Jeans</span>
+            <span style="font-size: 19px; font-weight: 800; color: #231f20; font-style: italic;">Wrangler</span>
+        </div>
+    </div>
+
+    <div class="dk-newsletter-bg">
+        <div class="dk-newsletter-container">
+            <div class="dk-news-text">
+                <h3>Newsletter</h3>
+                <p>Excepteur sint occaecat cupidatat non proident, sunt.</p>
+            </div>
+            <div class="dk-news-form">
+                <form action="#" method="post" style="display: flex; width: 100%; margin: 0;">
+                    {% csrf_token %}
+                    <input type="email" placeholder="Email" required>
+                    <button type="submit">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="dk-main-footer">
+        
+        <div class="dk-footer-col">
+            <div class="dk-footer-brand">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 11V7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7V11" stroke="#2ecc71" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M4 9 Dickens 20H20L21 9H3L4 9Z" fill="#2ecc71"/>
+                    <rect x="3" y="9" width="18" height="11" rx="2" fill="#2ecc71"/>
+                </svg>
+                <h2>DESI KART</h2>
+            </div>
+            <div class="dk-contact-info">
+                <p>Asansole, Railway Colony</p>
+                <p>West Bengal, India</p>
+                <p style="margin-top: 12px; font-weight: 500; color: #000000;">desikart2026@gmail.com</p>
+            </div>
+            <div class="dk-social-links">
+                <a href="#" class="dk-social-btn"><i class="fa fa-twitter"></i></a>
+                <a href="#" class="dk-social-btn"><i class="fa fa-dribbble"></i></a>
+                <a href="#" class="dk-social-btn"><i class="fa fa-facebook"></i></a>
+                <a href="#" class="dk-social-btn"><i class="fa fa-linkedin"></i></a>
+            </div>
+        </div>
+
+        <div class="dk-footer-col">
+            <h4>Information</h4>
+            <ul>
+                <li><a href="#">Contact Us</a></li>
+                <li><a href="#">Web Icons</a></li>
+                <li><a href="#">Typography</a></li>
+                <li><a href="#">FAQ's</a></li>
+            </ul>
+        </div>
+
+        <div class="dk-footer-col">
+            <h4>Shop</h4>
+            <ul>
+                <li><a href="#">Jewellery</a></li>
+                <li><a href="#">Cosmetics</a></li>
+                <li><a href="#">Shoes</a></li>
+                <li><a href="#">Deos</a></li>
+            </ul>
+        </div>
+
+        <div class="dk-footer-col">
+            <h4>My Account</h4>
+            <ul>
+                <li><a href="{% url 'user_login' %}">Login</a></li>
+                <li><a href="{% url 'register' %}">Register</a></li>
+                <li><a href="#">Recommended</a></li>
+                <li><a href="#">Payments</a></li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="dk-copyright-bar">
+        © 2026 . All rights reserved | Design by Ranadhir & Deepak & Souvik
+    </div>
+
+</footer>

@@ -1,0 +1,158 @@
+{% extends 'store/base.html' %}
+{% block title %}Desi Kart Admin | Order Management{% endblock %}
+
+{% block content %}
+
+<!-- Load Chart.js Engine CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="row" style="margin-bottom: 30px; margin-top: 20px;">
+    <!-- Monthly Revenue Performance Line Curve Chart Container -->
+    <div class="col-md-7" style="margin-bottom: 20px;">
+        <div style="background: #ffffff; padding: 20px; border-radius: 6px; border: 1px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+            <h4 style="font-weight: 700; color: #212121; font-size: 15px; margin-top: 0; margin-bottom: 15px; text-transform: uppercase;">2026 Monthly Revenue Analysis</h4>
+            <div style="height: 280px; position: relative;">
+                <canvas id="revenueLineChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Sales Performance Distribution Pie Chart Container -->
+    <div class="col-md-5" style="margin-bottom: 20px;">
+        <div style="background: #ffffff; padding: 20px; border-radius: 6px; border: 1px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+            <h4 style="font-weight: 700; color: #212121; font-size: 15px; margin-top: 0; margin-bottom: 15px; text-transform: uppercase;">Sales Category Volume Share</h4>
+            <div style="height: 280px; position: relative; display: flex; justify-content: center;">
+                <canvas id="categoryPieChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 1. Line Chart Construction Logic
+const ctxLine = document.getElementById('revenueLineChart').getContext('2d');
+new Chart(ctxLine, {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        datasets: [{
+            label: 'Gross Income (₹)',
+            data: {{ revenue_dataset|safe }},
+            borderColor: '#2ecc71',
+            backgroundColor: 'rgba(46, 204, 113, 0.06)',
+            borderWidth: 3,
+            tension: 0.3,
+            fill: true,
+            pointBackgroundColor: '#2ecc71'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, grid: { color: '#f3f3f3' } }, x: { grid: { display: false } } }
+    }
+});
+
+// 2. Pie Chart Construction Logic
+const ctxPie = document.getElementById('categoryPieChart').getContext('2d');
+new Chart(ctxPie, {
+    type: 'pie',
+    data: {
+        labels: {{ category_labels|safe }},
+        datasets: [{
+            data: {{ category_data|safe }},
+            backgroundColor: ['#2874f0', '#ff9f00', '#2ecc71', '#9b59b6', '#e74c3c', '#1abc9c'],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } } }
+    }
+});
+</script>
+
+<div class="container" style="margin-top: 30px; margin-bottom: 50px;">
+    
+    <!-- Admin Metrics Cards Summary Panel -->
+    <div class="row" style="margin-bottom: 30px;">
+        <div class="col-sm-6 col-md-4" style="margin-bottom: 15px;">
+            <div style="background: #ffffff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); border-left: 5px solid #2ecc71;">
+                <span style="color: #878787; font-size: 13px; text-transform: uppercase; font-weight: 600;">Total Revenue</span>
+                <h2 style="margin: 5px 0 0 0; font-weight: 700; color: #212121;">₹{{ total_revenue }}</h2>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-4" style="margin-bottom: 15px;">
+            <div style="background: #ffffff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); border-left: 5px solid #ff9f00;">
+                <span style="color: #878787; font-size: 13px; text-transform: uppercase; font-weight: 600;">Pending Actions</span>
+                <h2 style="margin: 5px 0 0 0; font-weight: 700; color: #212121;">{{ pending_orders }} Orders</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Orders Management Breakdown Table -->
+    <div style="background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+        <h3 style="font-weight: 700; color: #212121; margin-top: 0; margin-bottom: 20px; font-size: 18px; text-transform: uppercase;">
+            Store Orders Management Desk
+        </h3>
+
+        {% if orders %}
+            <div class="table-responsive">
+                <table class="table" style="vertical-align: middle;">
+                    <thead>
+                        <tr style="background: #f9fafb; color: #666; font-size: 13px;">
+                            <th>Order ID</th>
+                            <th>Customer Details</th>
+                            <th>Items Purchased</th>
+                            <th>Total Price</th>
+                            <th>Placement Date</th>
+                            <th style="width: 200px;">Fulfillment Status Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            <tr style="font-size: 14px; border-bottom: 1px solid #f0f0f0;">
+                                <td style="font-weight: 700; color: #212121; padding: 15px 8px;">#{{ order.id }}</td>
+                                <td style="padding: 15px 8px;">
+                                    <strong style="color:#212121;">{{ order.full_name }}</strong><br>
+                                    <small class="text-muted"><i class="fa fa-phone"></i> {{ order.phone_number }}</small><br>
+                                    <small class="text-muted">{{ order.shipping_address }}, {{ order.city }} - {{ order.pincode }}</small>
+                                </td>
+                                <td style="padding: 15px 8px;">
+                                    <ul style="padding-left: 15px; margin: 0; font-size: 13px; color: #444;">
+                                        {% for item in order.items.all %}
+                                            <li>{{ item.product.name|default:"Deleted Item" }} <strong>(x{{ item.quantity }})</strong></li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                                <td style="font-weight: 600; color: #212121; padding: 15px 8px;">₹{{ order.total_amount }}</td>
+                                <td style="color: #666; font-size: 13px; padding: 15px 8px;">{{ order.created_at|date:"d M Y, h:i A" }}</td>
+                                <td style="padding: 15px 8px;">
+                                    <!-- Dynamic Inline Status Adjuster Form Trigger -->
+                                    <form action="{% url 'update_order_status' order.id %}" method="POST" style="margin: 0; display: flex; gap: 6px;">
+                                        {% csrf_token %}
+                                        <select name="status" class="form-control" style="height: 34px; font-size: 13px; border-radius: 4px; padding: 4px 8px;" onchange="this.form.submit()">
+                                            <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                            <option value="Packed" {% if order.status == 'Packed' %}selected{% endif %}>Packed</option>
+                                            <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                            <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                            <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                        </select>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center" style="padding: 40px 0;">
+                <i class="fa fa-inbox" style="font-size: 40px; color: #cccccc; margin-bottom: 10px;"></i>
+                <p style="color: #666;">No customer transactions found recorded in database archives.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

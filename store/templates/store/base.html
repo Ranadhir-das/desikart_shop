@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Desi Kart | Online Shopping Site{% endblock %}</title>
+    
+    <!-- External CSS dependencies -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <!-- External JS dependencies -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+    <!-- Include the Navbar Component directly -->
+    {% include 'store/navbar.html' %}
+
+    <!-- Global Message Notification Alerts -->
+    <div class="container" style="margin-top: 15px;">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'info' %}info{% else %}success{% endif %} alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Dynamic Main Page Content Block -->
+    <div class="main-content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    {% include 'store/footer.html' %}
+
+{% if user.is_authenticated %}
+<script>
+    (function() {
+        // Define timeout limit in milliseconds (5 minutes = 300,000 ms)
+        const INACTIVITY_TIMEOUT = 300000; 
+        let inactivityTimer;
+
+        // Function that redirects the browser to your logout URL route
+        function logoutUser() {
+            alert("You have been logged out due to inactivity.");
+            window.location.href = "{% url 'user_logout' %}";
+        }
+
+        // Resets the countdown timer back to zero on user interaction
+        function resetTimer() {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(logoutUser, INACTIVITY_TIMEOUT);
+        }
+
+        // List of DOM event listeners to monitor user interaction activity
+        const activityEvents = ['mousemove', 'mousedown', 'click', 'scroll', 'keypress', 'touchstart'];
+        
+        // Bind the reset function to all activity events
+        activityEvents.forEach(function(eventName) {
+            document.addEventListener(eventName, resetTimer, true);
+        });
+
+        // Initialize the first timer loop sequence on window screen mount
+        resetTimer();
+    })();
+</script>
+{% endif %}
+
+</body>
+</html>
