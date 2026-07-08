@@ -13,3 +13,6 @@ __pycache__/
 
 # Ignore OS files
 .DS_Store
+
+# Ignore environment secret files
+.env
