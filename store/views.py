@@ -1,3 +1,14 @@
+import ssl
+import random
+from django.core.mail import send_mail
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+
+# This must be outside of any function blocks (at the root level of the file)
+ssl._create_default_https_context = ssl._create_unverified_context
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -359,3 +370,75 @@ def update_cart_quantity(request, item_id, action):
         messages.info(request, f"Removed {cart_item.product.name} from cart.")
         
     return redirect('cart_detail')
+
+
+
+def send_signup_otp(request):
+    """ Step 2A: Validates uniqueness of an email and sends an SMTP OTP token """
+    if request.method == "POST":
+        email = request.POST.get('email', '').strip()
+        
+        if User.objects.filter(email=email).exists():
+            return JsonResponse({'status': 'error', 'message': 'This email is already registered on Desi Kart.'})
+        
+        # Generate a secure 6-digit random number token
+        otp = str(random.randint(100000, 999999))
+        
+        # Cache the values directly inside the encrypted user session
+        request.session['signup_email'] = email
+        request.session['signup_otp'] = otp
+        
+        try:
+            send_mail(
+                subject="Verify Your Desi Kart Account Email",
+                message=f"Your authentication security pin is: {otp}\n\nPlease do not share this token code with anyone.",
+                from_email=None,
+                recipient_list=[email],
+                fail_silently=False,
+            )
+            return JsonResponse({'status': 'success', 'message': 'Verification code transmitted successfully!'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': 'SMTP Transmission failure. Check mail server access settings.'})
+            
+    return render(request, 'store/register_email.html')
+
+def verify_and_register(request):
+    """ Step 2B: Confirms the session security pin and creates the profile """
+    email = request.session.get('signup_email')
+    session_otp = request.session.get('signup_otp')
+    
+    # FIX: If a user tries to access this page directly without an active session,
+    # redirect them back to the email input page instead of throwing a 500 error.
+    if not email or not session_otp:
+        messages.error(request, "Please enter your email to receive an OTP first.")
+        return redirect('send_signup_otp')
+        
+    if request.method == "POST":
+        user_otp = request.POST.get('otp', '').strip()
+        name = request.POST.get('name', '').strip()
+        password = request.POST.get('password', '').strip()
+        
+        if user_otp != session_otp:
+            messages.error(request, "Invalid validation security pin. Try again.")
+            return render(request, 'store/register_details.html', {'email': email})
+            
+        if not name or not password:
+            messages.error(request, "Please fill out all identity profile fields.")
+            return render(request, 'store/register_details.html', {'email': email})
+            
+        try:
+            username = email.split('@')[0] + str(random.randint(10, 99))
+            user = User.objects.create_user(username=username, email=email, password=password)
+            user.first_name = name
+            user.save()
+            
+            # Clear session space parameters cleanly
+            del request.session['signup_email']
+            del request.session['signup_otp']
+            
+            messages.success(request, f"Registration complete! Welcome to Desi Kart, {name}.")
+            return redirect('user_login')
+        except Exception as e:
+            messages.error(request, f"Account database registration error: {str(e)}")
+            
+    return render(request, 'store/register_details.html', {'email': email})

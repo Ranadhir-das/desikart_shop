@@ -1,0 +1,52 @@
+{% extends 'store/base.html' %}
+{% block content %}
+<div class="container" style="max-width: 450px; margin: 50px auto;">
+    <div style="background: #ffffff; padding: 30px; border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.05); border: 1px solid #e0e0e0;">
+        <h3 style="font-weight: 700; color: #212121; margin-bottom: 20px;">Create Account</h3>
+        
+        <div id="alertBox" style="display:none; padding: 10px; margin-bottom: 15px; border-radius: 4px; font-weight: 600; font-size: 13px;"></div>
+
+        <form id="emailOtpForm">
+            {% csrf_token %}
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="font-weight: 600; margin-bottom: 6px; color: #666;">Email Address</label>
+                <input type="email" id="userEmail" class="form-control" placeholder="Enter email to get OTP" required style="height: 42px;">
+            </div>
+            <button type="submit" id="submitBtn" class="btn btn-block" style="background: #ff9f00; color: white; font-weight: 700; height: 42px; text-transform: uppercase;">Get Verification Code</button>
+        </form>
+    </div>
+</div>
+
+<script>
+document.getElementById('emailOtpForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const alertBox = document.getElementById('alertBox');
+    
+    btn.disabled = true;
+    btn.innerText = "Transmitting OTP...";
+    
+    const formData = new FormData();
+    formData.append('email', document.getElementById('userEmail').value);
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+    
+    fetch("{% url 'send_signup_otp' %}", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.status === 'success') {
+            window.location.href = "{% url 'verify_and_register' %}";
+        } else {
+            alertBox.style.display = "block";
+            alertBox.style.backgroundColor = "#ffebee";
+            alertBox.style.color = "#c62828";
+            alertBox.innerText = data.message;
+            btn.disabled = false;
+            btn.innerText = "Get Verification Code";
+        }
+    });
+});
+</script>
+{% endblock %}

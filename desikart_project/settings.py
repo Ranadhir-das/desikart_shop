@@ -139,3 +139,22 @@ ALLOWED_HOSTS = ['desikart2.pythonanywhere.com']
 
 # 3. Explicitly define where collected static files should live
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
+
+# =========================================================================
+# EMAIL SMTP GATEWAY SYSTEM
+# =========================================================================
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'                 # Replace with your provider if not Gmail
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'help.desikart@gmail.com'      # Your business email address
+EMAIL_HOST_PASSWORD = 'kvvy jhag ebhv pijf'     # Generate a Google App Password (do not use normal password)
+DEFAULT_FROM_EMAIL = f'DesiKart <{EMAIL_HOST_USER}>'
+
+# Allow both your local development addresses and your live deployment URL
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    'desikart2.pythonanywhere.com',  # Based on your PythonAnywhere username
+]
+
